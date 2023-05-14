@@ -68,7 +68,7 @@ class _FirstpgeState extends State<Firstpge> {
                   color: Colors.blue,
                   child: TextButton(
                     onPressed: () async {
-                      Navigator.pushNamed(context, 'teacherreg');
+                      Navigator.pushNamed(context, 'teacherHome');
                     },
                     child: const Text(
                       'استاذ',
