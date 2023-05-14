@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:graduationproject2/StudentScreen/Homeoage.dart';
+// ignore_for_file: camel_case_types
 
-import '../classes/Teacher.dart';
+import 'package:flutter/material.dart';
+ 
 import '../classes/favaurite.dart';
 import '../services/Api_helper.dart';
 

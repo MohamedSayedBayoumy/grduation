@@ -4,7 +4,7 @@ import 'package:graduationproject2/TeacherScreen/TeacherHome.dart';
 import 'package:graduationproject2/firstpage.dart';
 import 'package:graduationproject2/StudentScreen/favourite.dart';
 import 'package:graduationproject2/provider/favourite_provide.dart';
-import 'StudentScreen/Homeoage.dart';
+import 'StudentScreen/home_page.dart';
 import 'StudentScreen/Registration.dart';
 import 'StudentScreen/login.dart';
 import 'TeacherScreen/video.dart';

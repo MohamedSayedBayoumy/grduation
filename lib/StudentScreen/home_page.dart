@@ -1,6 +1,3 @@
-// ignore_for_file: unrelated_type_equality_checks, prefer_const_constructors, sort_child_properties_last, avoid_print
-
-import 'dart:convert';
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
