@@ -1,15 +1,22 @@
+// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:graduationproject2/TeacherScreen/TeacherHome.dart';
+import 'package:graduationproject2/classes/Teacher.dart';
+import 'package:graduationproject2/services/api_helper.dart';
+
+import '../classes/Material.dart';
+import '../main.dart';
 
 class Registrationteacher2 extends StatefulWidget {
-  const Registrationteacher2({Key? key}) : super(key: key);
+  Teacher? teacher;
+  Registrationteacher2({this.teacher, Key? key}) : super(key: key);
 
   @override
   State<Registrationteacher2> createState() => _Registrationteacher2State();
 }
 
-
 class _Registrationteacher2State extends State<Registrationteacher2> {
-
   String? _validatepricehour(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a price';
@@ -30,6 +37,7 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
     }
     return null;
   }
+
   String? _validatcity(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your city';
@@ -37,15 +45,20 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
     return null;
   }
 
+  String _gender = '';
+
   bool _isChecked1 = false;
   bool _isChecked2 = false;
   bool _isChecked3 = false;
   bool _isChecked4 = false;
   final _priceperhourController = TextEditingController();
   final _pricepercourseController = TextEditingController();
-  final _cityController= TextEditingController();
+  final _cityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _subject= TextEditingController();
+  final _subject = TextEditingController();
+  List<Subject>? subjects = [];
+  List<String>? teachingWays = [];
+  List<String>? targetedStudents = [];
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +76,6 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                   SizedBox(height: 70.0),
                   TextFormField(
                     controller: _cityController,
-
                     decoration: InputDecoration(
                       labelText: ' المحافظة',
                       border: OutlineInputBorder(),
@@ -71,9 +83,14 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                     ),
                     validator: _validatcity,
                   ),
-                  SizedBox(height: 20.0,),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                   TextFormField(
                     controller: _subject,
+                    onChanged: (value) {
+                      subjects = [Subject(title: value.toString())];
+                    },
                     decoration: InputDecoration(
                       labelText: 'المادة',
                       border: OutlineInputBorder(),
@@ -92,6 +109,11 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                       border: OutlineInputBorder(),
                       filled: true,
                     ),
+                    onChanged: (value) {
+                      subjects = [
+                        Subject(pricePerHour: double.parse(value.toString()))
+                      ];
+                    },
                     validator: _validatepricehour,
                   ),
                   const SizedBox(
@@ -100,6 +122,10 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                   TextFormField(
                     controller: _pricepercourseController,
                     keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      double.parse(value);
+                      setState(() {});
+                    },
                     decoration: InputDecoration(
                       labelText: ' السعر للمادة ',
                       border: OutlineInputBorder(),
@@ -122,6 +148,16 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                             value: _isChecked1,
                             onChanged: (bool? newValue) {
                               setState(() {
+                                if (newValue == true) {
+                                  teachingWays!.add("OFFLINE");
+                                  teachingWays!.remove("ONLINE");
+                                  _isChecked2 = false;
+                                } else {
+                                  teachingWays!.remove("OFFLINE");
+                                }
+                                print(teachingWays);
+
+                                print(newValue);
                                 _isChecked1 = newValue ?? true;
                                 state.didChange(newValue);
                               });
@@ -136,6 +172,16 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                             onChanged: (bool? newValue) {
                               setState(() {
                                 _isChecked2 = newValue ?? true;
+
+                                if (newValue == true) {
+                                  teachingWays!.add("ONLINE");
+                                  teachingWays!.remove("OFFLINE");
+                                  _isChecked1 = false;
+                                } else {
+                                  teachingWays!.remove("ONLINE");
+                                }
+                                print(teachingWays);
+                                print(newValue);
                                 state.didChange(newValue);
                               });
                             },
@@ -167,10 +213,16 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                           Checkbox(
                             value: _isChecked3,
                             onChanged: (bool? newValue) {
-                              setState(() {
-                                _isChecked3 = newValue ?? true;
-                                state.didChange(newValue);
-                              });
+                              if (newValue == true) {
+                                targetedStudents!.add("MALE");
+                              } else {
+                                targetedStudents!.remove("MALE");
+                              }
+
+                              print(targetedStudents);
+                              _isChecked3 = newValue ?? true;
+                              state.didChange(newValue);
+                              setState(() {});
                             },
                           ),
                           Text('ذكر',
@@ -180,10 +232,17 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                           Checkbox(
                             value: _isChecked4,
                             onChanged: (bool? newValue) {
-                              setState(() {
-                                _isChecked4 = newValue ?? true;
-                                state.didChange(newValue);
-                              });
+                              if (newValue == true) {
+                                targetedStudents!.add("FEMALE");
+                              } else {
+                                targetedStudents!.remove("FEMALE");
+                              }
+
+                              _isChecked4 = newValue ?? true;
+                              state.didChange(newValue);
+
+                              print(targetedStudents);
+                              setState(() {});
                             },
                           ),
                           Text('انثى',
@@ -199,9 +258,32 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                       return null;
                     },
                   ),
-                const  SizedBox(
+                  const SizedBox(
                     height: 20.0,
                   ),
+                  Text('الجنس'),
+                  Row(children: <Widget>[
+                    Radio(
+                      value: 'MALE',
+                      groupValue: _gender,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _gender = value!.toUpperCase();
+                        });
+                      },
+                    ),
+                    Text('ذكر'),
+                    Radio(
+                      value: 'FEMALE',
+                      groupValue: _gender,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _gender = value!.toUpperCase();
+                        });
+                      },
+                    ),
+                    Text('انثى'),
+                  ]),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors
@@ -213,11 +295,34 @@ class _Registrationteacher2State extends State<Registrationteacher2> {
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-
-                          Navigator.pushNamed(context, 'teacherHome');
+                          TeacherServices.regsiterTeacher(
+                            firstName: widget.teacher!.firstName,
+                            lastName: widget.teacher!.firstName,
+                            gender: _gender,
+                            username: widget.teacher!.username,
+                            password: widget.teacher!.password,
+                            email: widget.teacher!.email,
+                            city: _cityController.text,
+                            phoneNumber: widget.teacher!.phoneNumber.toString(),
+                            teachingWays: teachingWays,
+                            targetedStudents: targetedStudents,
+                            title: _subject.text,
+                            pricePerHour: _priceperhourController.text,
+                            pricePerCourse: _pricepercourseController.text,
+                          ).then((value) async {
+                            if (value.id != null) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        TeacherhomeScreen(teacher: value),
+                                  ));
+                            } else {
+                              print("ERROR");
+                            }
+                          });
                         }
-                      })
+                      }),
                 ],
               ),
             ),

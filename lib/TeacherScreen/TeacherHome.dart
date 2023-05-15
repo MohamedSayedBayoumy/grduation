@@ -1,14 +1,18 @@
+// ignore_for_file: prefer_const_constructors, unnecessary_late, must_be_immutable
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:graduationproject2/classes/Teacher.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:video_player/video_player.dart';
-import 'package:http/http.dart ' as http;
+
+import '../services/Api_helper.dart';
+
 class TeacherhomeScreen extends StatefulWidget {
-  const TeacherhomeScreen({Key? key}) : super(key: key);
+  int? teacherId;
+  Teacher? teacher;
+  TeacherhomeScreen({this.teacherId, this.teacher, Key? key}) : super(key: key);
 
   @override
   State<TeacherhomeScreen> createState() => _TeacherhomeScreenState();
@@ -33,7 +37,6 @@ int current = 0;
 //     gender: gender, city: city, subject: subject, pricepercourse: pricepercourse,
 //     priceperhour: priceperhour);
 
-
 // void fetchData() arabiasync {
 //   final response = await http.get(Uri.parse('https://mobiinstructor-production.up.railway.app/mobi-instructor/api/v1/students/1'));
 //
@@ -46,7 +49,6 @@ int current = 0;
 //     print('Error: ${response.statusCode}');
 //   }
 // }
-
 
 late TextEditingController _nameController;
 late TextEditingController _emailController;
@@ -64,21 +66,11 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
         _isEditing = true;
       });
     }
-
-
   }
 
-  void onpressedd() {
-    if (_isediting1) {
-      setState(() {
-        _isediting1 = false;
-      });
-    } else {
-      setState(() {
-        _isediting1 = true;
-      });
-    }
-  }
+  TextEditingController descrption = TextEditingController();
+
+  void onpressedd() {}
 
   late File _image;
   File? selectedImage;
@@ -157,6 +149,21 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
     super.dispose();
   }
 
+  Teacher? teacher;
+
+  Color colorFavourite = Colors.white;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      TeacherServices.getTeacherdata(idTeacher: widget.teacher!.id!.toInt())
+          .then((value) {
+        widget.teacher = value;
+        setState(() {});
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -231,7 +238,12 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                             name = value;
                           })
                       : Center(
-                          child: Text('الاسم : $name',style:TextStyle(fontSize: 25,),),
+                          child: Text(
+                            'الاسم : ${widget.teacher!.firstName?.toString() ?? ""}',
+                            style: TextStyle(
+                              fontSize: 25,
+                            ),
+                          ),
                         ),
                   const SizedBox(
                     height: 20.0,
@@ -248,7 +260,12 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                             email = value;
                           })
                       : Center(
-                          child: Text('البريد الالكتروني : $email', style:TextStyle(fontSize: 25,),),
+                          child: Text(
+                            'البريد الالكتروني : ${widget.teacher!.email?.toString() ?? ""}',
+                            style: TextStyle(
+                              fontSize: 25,
+                            ),
+                          ),
                         ),
                   const SizedBox(
                     height: 20.0,
@@ -266,7 +283,12 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                           },
                         )
                       : Center(
-                          child: Text('اسم المستخدم : $username', style:TextStyle(fontSize: 25,),),
+                          child: Text(
+                            'اسم المستخدم : ${widget.teacher!.username?.toString() ?? "  "}',
+                            style: TextStyle(
+                              fontSize: 25,
+                            ),
+                          ),
                         ),
                   const SizedBox(
                     height: 16.0,
@@ -283,7 +305,12 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                             city = value;
                           })
                       : Center(
-                          child: Text('المحافظة : $city', style:TextStyle(fontSize: 25,),),
+                          child: Text(
+                            'المحافظة : ${widget.teacher!.city?.toString() ?? "  "}',
+                            style: TextStyle(
+                              fontSize: 25,
+                            ),
+                          ),
                         ),
                   const SizedBox(
                     height: 20.0,
@@ -294,8 +321,21 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                         backgroundColor: Colors
                             .teal, // Use the app's primary color for the button
                       ),
-                      onPressed: onpressedd,
-                      child: Text(_isediting1 ? 'حفظ' : 'تعديل', style: TextStyle(fontSize: 20),),
+                      onPressed: () {
+                        if (_isediting1) {
+                          setState(() {
+                            _isediting1 = false;
+                          });
+                        } else {
+                          setState(() {
+                            _isediting1 = true;
+                          });
+                        }
+                      },
+                      child: Text(
+                        _isediting1 ? 'حفظ' : 'تعديل',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                 ]),
@@ -306,75 +346,100 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  _isEditing
-                      ? TextField(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: 'المادة',
-                            hintText: subject,
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          onChanged: (value) {
-                            subject = value;
-                          })
-                      : Center(
-                          child: Text(' المادة : $subject', style: TextStyle(fontSize: 25),),
-                        ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  _isEditing
-                      ? TextField(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: 'السعر',
-                            hintText: priceperhour.toString(),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          onChanged: (value) {
-                            int? newPrice = int.tryParse(value);
-                            if (newPrice != null) {
-                              priceperhour = newPrice; // update pricepercourse
-                            }
-                          },
-                        )
-                      : Center(
-                          child: Text('السعر للساعة : $priceperhour',  style: TextStyle(fontSize: 25)),
-                        ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  _isEditing
-                      ? TextField(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: ' السعر للدورة',
-                            hintText: pricepercourse.toString(),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          onChanged: (value) {
-                            int? newPrice = int.tryParse(
-                                value); // convert input string to int
-                            if (newPrice != null) {
-                              pricepercourse =
-                                  newPrice; // update pricepercourse
-                            }
-                          },
-                        )
-                      : Center(
-                          child: Text('السعر للدورة : $pricepercourse',  style: TextStyle(fontSize: 25)),
-                        ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .teal, // Use the app's primary color for the button
-                      ),
-                      onPressed: onpressed,
-                      child: Text(_isEditing ? 'حفظ' : 'تعديل', style: TextStyle(fontSize: 25)),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      itemCount: widget.teacher!.materials?.length ?? 1,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            _isEditing
+                                ? TextField(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: 'المادة',
+                                      hintText: subject,
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    onChanged: (value) {
+                                      subject = value;
+                                    })
+                                : Center(
+                                    child: Text(
+                                      ' المادة : ${widget.teacher!.materials![index].title?.toString() ?? " "}',
+                                      style: TextStyle(fontSize: 25),
+                                    ),
+                                  ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            _isEditing
+                                ? TextField(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: 'السعر',
+                                      hintText: priceperhour.toString(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    onChanged: (value) {
+                                      int? newPrice = int.tryParse(value);
+                                      if (newPrice != null) {
+                                        priceperhour =
+                                            newPrice; // update pricepercourse
+                                      }
+                                    },
+                                  )
+                                : Center(
+                                    child: Text(
+                                        'السعر للساعة : ${widget.teacher!.materials![index].pricePerHour?.toString() ?? " "}',
+                                        style: TextStyle(fontSize: 25)),
+                                  ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            _isEditing
+                                ? TextField(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: ' السعر للدورة',
+                                      hintText: pricepercourse.toString(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    onChanged: (value) {
+                                      int? newPrice = int.tryParse(
+                                          value); // convert input string to int
+                                      if (newPrice != null) {
+                                        pricepercourse =
+                                            newPrice; // update pricepercourse
+                                      }
+                                    },
+                                  )
+                                : Center(
+                                    child: Text(
+                                        'السعر للدورة : ${widget.teacher!.materials![index].pricePerCourse?.toString() ?? " "}',
+                                        style: TextStyle(fontSize: 25)),
+                                  ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors
+                                      .teal, // Use the app's primary color for the button
+                                ),
+                                onPressed: onpressed,
+                                child: Text(_isEditing ? 'حفظ' : 'تعديل',
+                                    style: TextStyle(fontSize: 25)),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ]),
@@ -400,11 +465,12 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                     //       _pickvideo();
                     //       //Navigator.pushNamed(context, 'video');
                     //     },
-                       // child: const Text('pick a video')),
+                    // child: const Text('pick a video')),
                     SizedBox(
                       height: 20.0,
                     ),
                     TextFormField(
+                      controller: descrption,
                       maxLines: 5,
                       decoration: InputDecoration(
                         hintText: 'Enter a short bio about yourself',
@@ -413,6 +479,18 @@ class _TeacherhomeScreenState extends State<TeacherhomeScreen> {
                     ),
                     const SizedBox(
                       height: 20.0,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors
+                              .teal, // Use the app's primary color for the button
+                        ),
+                        onPressed: () {
+                          
+                        },
+                        child: Text('حفظ', style: TextStyle(fontSize: 25)),
+                      ),
                     ),
                   ],
                 ),

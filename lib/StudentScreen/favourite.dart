@@ -1,8 +1,9 @@
 // ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
- 
+
 import '../classes/favaurite.dart';
+import '../main.dart';
 import '../services/Api_helper.dart';
 
 class favourite extends StatefulWidget {
@@ -13,15 +14,16 @@ class favourite extends StatefulWidget {
 }
 
 class _favouriteState extends State<favourite> {
- 
-
   List<Favourite> currentFavourite = [];
 
   @override
   void initState() {
     super.initState();
+    print(sharedPreferences.getInt("CurrentStudent")!.toInt());
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      RateAndFavourite.getFavourite(idStudent: 2).then((value) {
+      RateAndFavourite.getFavourite(
+              idStudent: sharedPreferences.getInt("CurrentStudent")!.toInt())
+          .then((value) {
         currentFavourite = value;
         setState(() {});
       });

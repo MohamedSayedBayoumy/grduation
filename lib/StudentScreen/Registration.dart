@@ -1,40 +1,27 @@
+// ignore_for_file: prefer_const_constructors, avoid_print, library_private_types_in_public_api, file_names, use_build_context_synchronously, unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:graduationproject2/services/api_helper.dart';
-import '../classes/Student.dart';
-import 'package:http/http.dart' as http;
 
-
-
-
+import '../main.dart';
 
 class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({Key? key}) : super(key: key);
+
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
-  // late String _firstname;
-  // late String _lastname;
-  // late String _email;
-  // late String _username;
-  // late String _password;
-  // late String _phonenumber;
   String _gender = '';
-  // final _emailController  = TextEditingController();
-  // final _passwordController = TextEditingController();
-  // final _nameController = TextEditingController();
-  // final _usernameController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
-  TextEditingController firstname = TextEditingController();
-  TextEditingController lastname = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController username = TextEditingController();
-  TextEditingController gender = TextEditingController();
-  TextEditingController password = TextEditingController();
-  bool _ismale = false;
-
-
+  final firstname = TextEditingController();
+  final lastname = TextEditingController();
+  final email = TextEditingController();
+  final username = TextEditingController();
+  final gender = TextEditingController();
+  final password = TextEditingController();
 
   @override
   void dispose() {
@@ -42,13 +29,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _confirmpasswordController.dispose();
     super.dispose();
   }
+
   String? _validatePassword(String? value) {
     RegExp regex =
-    RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value == null || value.isEmpty) {
       return 'Please enter a password';
     }
-    if(value.length<8 && value.contains(regex)){
+    if (value.length < 8 && value.contains(regex)) {
       return 'invalid pasword';
     }
     return null;
@@ -64,7 +52,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return null;
   }
 
-  String? _validateusername(String? value){
+  String? _validateusername(String? value) {
     if (value != null && value.isEmpty) {
       return 'Please enter a username';
     }
@@ -81,50 +69,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return true;
   }
 
-
-  String? _validatename(String? value){
+  String? _validatename(String? value) {
     if (value != null && value.isEmpty) {
       return 'Please enter your name';
     }
     return null;
   }
-  final StudentServices _studentServices = StudentServices();
-
-
-  // Future RegistrationUser()  async{
-  //   var APIURL = 'https://mobiinstructor-production.up.railway.app/mobi-instructor/api/v1/student/';
-  //
-  //   //json maping user entered details
-  //  // // List <Student> data =[
-  //  //    'name':firstname.text + lastname.text,
-  //  //    'email':email.text,
-  //  //    'username':username.text,
-  //  //    'password':password.text
-  //  //  ];
-  //   body: jsonEncode(<String, String>{
-  //   'name':firstname.text + lastname.text,
-  //   'email':email.text,
-  //   'username':username.text,
-  //   'password':password.text,
-  //     'gender': 'FEMALE',
-  //
-  //
-  //
-  //   });
-  //
-  //   http.Response reponse = await http.post(APIURL as Uri);
-  //
-  //   var data = jsonDecode(reponse.body);
-  //   print("DATA: ${data}");
-  //
-  // }
-
-
 
   @override
   Widget build(BuildContext context) {
-
-        return Padding (
+    return Padding(
       padding: EdgeInsets.all(0),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -133,70 +87,59 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             title: Text('Registration Screen'),
             backgroundColor: Colors.teal,
           ),
-          body:Form(
+          body: Form(
             key: _formKey,
-
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
-                child: Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 10.0),
-                      TextFormField(
-                        controller: firstname,
-                        decoration: const InputDecoration(
-                          labelText: 'الاسم',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: _validatename,
-                        onSaved: (String ? firstname) {
-
-                        },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: firstname,
+                      decoration: const InputDecoration(
+                        labelText: 'الاسم',
+                        border: OutlineInputBorder(),
                       ),
-                      SizedBox(height: 10.0),
-                      TextFormField(
-                        controller: lastname,
-                        decoration: const  InputDecoration(
-                          labelText: 'الاسم التاني',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: _validatename,
-                        onSaved: (String ?lastname) {
-
-                        },
+                      validator: _validatename,
+                      onSaved: (String? firstname) {},
+                    ),
+                    SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: lastname,
+                      decoration: const InputDecoration(
+                        labelText: 'الاسم التاني',
+                        border: OutlineInputBorder(),
                       ),
-                      const  SizedBox(height: 10.0),
-                      TextFormField(
-                        controller: email,
-                        decoration: const InputDecoration(
-                          labelText: 'البريد الالكتروني',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (!_validateemail(value!)) {
-                            return 'enter a valid email address';
-                          }
-                          return null;
-                        },
-                        onSaved: (String ? email) {
-
-                        },
+                      validator: _validatename,
+                      onSaved: (String? lastname) {},
+                    ),
+                    const SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: email,
+                      decoration: const InputDecoration(
+                        labelText: 'البريد الالكتروني',
+                        border: OutlineInputBorder(),
                       ),
-                     const SizedBox(height: 10.0),
-                      TextFormField(
-                        controller: username,
-                        decoration: const InputDecoration(
-                          labelText: 'اسم المستخدم',
-                          border: OutlineInputBorder(),
-                        ),
-
-                        validator: _validateusername,
-                        onSaved: (String ? username) {
-
-                        },
-                        /*validator: (value) {
+                      validator: (value) {
+                        if (!_validateemail(value!)) {
+                          return 'enter a valid email address';
+                        }
+                        return null;
+                      },
+                      onSaved: (String? email) {},
+                    ),
+                    const SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: username,
+                      decoration: const InputDecoration(
+                        labelText: 'اسم المستخدم',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: _validateusername,
+                      onSaved: (String? username) {},
+                      /*validator: (value) {
                           if (value != null && value.isEmpty) {
                             return 'Please enter a username';
                           }
@@ -204,21 +147,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         },
 
                         */
-
-
-                      ),
-                      SizedBox(height: 10.0),
-                      TextFormField(
-                          controller: password,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'كلمالسر',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: _validatePassword,
-                          onSaved: (String ? password) {
-
-                          }
+                    ),
+                    SizedBox(height: 10.0),
+                    TextFormField(
+                        controller: password,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'كلمالسر',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: _validatePassword,
+                        onSaved: (String? password) {}
                         /*validator: (value) {
                           if (value != null && value.isEmpty) {
                             return 'Please enter a password';
@@ -227,107 +166,83 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
 
                         ,*/
-                      ),
-                      const SizedBox(height: 10.0,),
-                      TextFormField(
-                        controller: _confirmpasswordController,
-                        obscureText: true,
-                        decoration:const  InputDecoration(
-                            labelText: 'تاكيد كلمة السر',
-                            border: OutlineInputBorder()
                         ),
-
-                        validator: _validateConfirmPassword,
-                      ),
-
-                      const SizedBox(height: 10.0),
-                      const Align( alignment: Alignment.centerRight,
-                          child:   Text('الجنس')),
-                      Row(
-                        children: <Widget>[
-                          Radio(
-                            value: 'male',
-                            groupValue: _gender,
-                            onChanged: (value) {
-                              setState(() {
-                                _gender = value! as String;
-                              });
-                            },
-                          ),
-                          Text('ذكر'),
-                          Radio(
-                            value: 'female',
-                            groupValue: _gender,
-                            onChanged: (value) {
-                              setState(() {
-                                _gender = value! as String;
-                              });
-                            },
-                          ),
-                          Text('انثى'),
-                        ],
-                      ),
-                      const SizedBox(height: 10.0),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .teal,
-                           // Set the size here
-                        ),// Use the app's primary color for the button
-
-                        child: const Text(
-                          'تسجيل',
-                          style: TextStyle(color: Colors
-                              .white), // Use the app's primary text color
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                    TextFormField(
+                      controller: _confirmpasswordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                          labelText: 'تاكيد كلمة السر',
+                          border: OutlineInputBorder()),
+                      validator: _validateConfirmPassword,
+                    ),
+                    const SizedBox(height: 10.0),
+                    const Align(
+                        alignment: Alignment.centerRight, child: Text('الجنس')),
+                    Row(
+                      children: [
+                        Radio(
+                          value: 'MALE',
+                          groupValue: _gender,
+                          onChanged: (String? value) {
+                            _gender = value!.toUpperCase();
+                            print(_gender);
+                            setState(() {});
+                          },
                         ),
-                        onPressed: ()  {
-                          Student newStudent = Student(
-                            firstName: firstname.text,
-                            lastName: lastname.text,
+                        Text('ذكر'),
+                        Radio(
+                          value: 'FEMALE',
+                          groupValue: _gender,
+                          onChanged: (String? value) {
+                            _gender = value!.toUpperCase();
+                            setState(() {});
+                          },
+                        ),
+                        Text('انثى'),
+                      ],
+                    ),
+                    const SizedBox(height: 10.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        // Set the size here
+                      ), // Use the app's primary color for the button
+
+                      child: const Text(
+                        'تسجيل',
+                        style: TextStyle(
+                            color: Colors
+                                .white), // Use the app's primary text color
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate() &&
+                            _gender != "") {
+                          StudentServices.registerStudent(
+                            userName: username.text,
+                            passWord: password.text,
                             email: email.text,
-                            username: username.text,
-                            password: password.text,
-                            gender: _gender, // enum ['MALE', 'FEMALE']
-
-                          );
-                            if(_formKey.currentState!.validate())
-                                {
-                                  // _studentServices.CreateStudent(newStudent).then((_) {
-                                  //   print("Successful");
-                                  //   Navigator.pushNamed(context, 'Home');
-                                  // }).catchError((error){
-                                  //   print('Registration failed: $error');
-                                  //   }
-                                  // );
-                                   }
-                                },
-
-
-                          // if (_formKey.currentState!.validate()) {
-                          //   // Save the user's data
-                          //    RegistrationUser();
-                          //   print('succesfull');
-                          //   _formKey.currentState!.save();
-                          //   Student Data = Student();
-                          //   Navigator.pushNamed(context, 'Home');
-                          //
-                          //   //Data.save();
-                          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          //     content: Text('User registered successfully'),
-                          //   ));
-                          // }
-                      ),
-
-                     TextButton( onPressed:(){
-                        Navigator.pushNamed(context, 'login');
+                            firstName: firstname.text,
+                            gender: _gender,
+                            lastName: lastname.text,
+                          ).then((value) {
+                            if (value == 0) {
+                              print("object");
+                            } else {
+                              Navigator.pushNamed(context, "Home");
+                            }
+                          });
+                        }
                       },
-                          child: Text('login'))
-
-
-
-                    ],
-
-                  ),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'login');
+                        },
+                        child: Text('login'))
+                  ],
                 ),
               ),
             ),

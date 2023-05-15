@@ -49,7 +49,7 @@ class _FirstpgeState extends State<Firstpge> {
                     color: Colors.blue,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, 'Home');
+                        Navigator.pushNamed(context, 'loginST');
                       },
                       child: const Text(
                         'طالب',
@@ -68,7 +68,7 @@ class _FirstpgeState extends State<Firstpge> {
                   color: Colors.blue,
                   child: TextButton(
                     onPressed: () async {
-                      Navigator.pushNamed(context, 'teacherHome');
+                      Navigator.pushNamed(context, 'loginTea');
                     },
                     child: const Text(
                       'استاذ',

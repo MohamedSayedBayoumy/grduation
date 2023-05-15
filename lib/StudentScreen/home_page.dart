@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:graduationproject2/classes/Teacher.dart';
 import 'package:graduationproject2/classes/favaurite.dart';
+import 'package:graduationproject2/main.dart';
 import 'package:graduationproject2/services/Api_helper.dart';
 
 import '../services/post.dart';
@@ -42,8 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {});
       });
 
-      RateAndFavourite.getFavourite(idStudent: 2).then((value) {
+      RateAndFavourite.getFavourite(
+              idStudent: sharedPreferences.getInt("CurrentStudent")!.toInt())
+          .then((value) {
         currentFavourite = value;
+        print(sharedPreferences.getInt("CurrentStudent"));
         setState(() {});
       });
     });
@@ -286,13 +290,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (currentIndexItem.isEmpty) {
                                     colorFavourite = Colors.red.shade900;
                                     RateAndFavourite.postFavourite(
-                                        idStudent: 2,
+                                        idStudent: sharedPreferences
+                                            .getInt("CurrentStudent")!
+                                            .toInt(),
                                         idTeacher: teacher[index].id!);
                                   } else {
                                     // here server have bugs ..
                                     colorFavourite = Colors.white;
                                     RateAndFavourite.deleteFavourite(
-                                        idStudent: 2,
+                                        idStudent: sharedPreferences
+                                            .getInt("CurrentStudent")!
+                                            .toInt(),
                                         idTeacher: teacher[index].id!);
                                   }
                                 },

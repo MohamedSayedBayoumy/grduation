@@ -1,17 +1,34 @@
+// ignore_for_file: unnecessary_null_comparison, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:graduationproject2/StudentScreen/StudentInfo.dart';
 import 'package:graduationproject2/TeacherScreen/TeacherHome.dart';
+import 'package:graduationproject2/classes/Teacher.dart';
 import 'package:graduationproject2/firstpage.dart';
 import 'package:graduationproject2/StudentScreen/favourite.dart';
-import 'package:graduationproject2/provider/favourite_provide.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'StudentScreen/home_page.dart';
 import 'StudentScreen/Registration.dart';
 import 'StudentScreen/login.dart';
+import 'TeacherScreen/Teacherlogin.dart';
 import 'TeacherScreen/video.dart';
 import 'TeacherScreen/registrationTeacher.dart';
 import 'TeacherScreen/registrationTeacher2.dart';
 
-void main() {
+late final SharedPreferences sharedPreferences;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  sharedPreferences = await SharedPreferences.getInstance();
+
+  if (sharedPreferences.getBool('isLoginStudent') == null) {
+    sharedPreferences.setBool("isLoginStudent", false);
+  } else {}
+
+  if (sharedPreferences.getBool('isLoginTeacher') == null) {
+    sharedPreferences.setBool("isLoginTeacher", false);
+  } else {}
+
   runApp(const MyApp());
 }
 
@@ -21,14 +38,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Firstpge(),
+      home: sharedPreferences.getBool('isLoginStudent') == true
+          ? HomeScreen()
+          : sharedPreferences.getBool('isLoginTeacher') == true
+              ? TeacherhomeScreen()
+              : Firstpge(),
       routes: {
         'register': (context) => RegistrationScreen(),
         'Home': (context) => HomeScreen(),
-        'login': (context) => Login(),
+        'loginST': (context) => Login(),
+        'loginTea': (context) => LoginTeacher(),
+        "homeTeacher": (context) => TeacherhomeScreen(),
         'teacherreg': (context) => RegistrationTeacher(),
         'teacherreg2': (context) => Registrationteacher2(),
-        'teacherHome': (context) => TeacherhomeScreen(),
         'video': (context) => test(),
         'favourite': (context) => favourite(),
         'profileinfo': (context) => StudentInfo(),

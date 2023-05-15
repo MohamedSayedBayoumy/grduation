@@ -11,28 +11,28 @@ class Teacher {
   String? description;
   String? phoneNumber;
   String? city;
-  List<String>? targetedStudents;
-  List<String>? teachingWays;
+  List<dynamic>? targetedStudents;
+  List<dynamic>? teachingWays;
   double? rateAvg;
   List<Materials>? materials;
 
   Teacher(
-      {this.id,
-      this.firstName,
-      this.lastName,
-      this.gender,
-      this.username,
-      this.password,
-      this.status,
-      this.email,
-      this.image,
-      this.description,
-      this.phoneNumber,
-      this.city,
-      this.targetedStudents,
-      this.teachingWays,
-      this.rateAvg,
-      this.materials});
+      {this.id = 0,
+      this.firstName = "",
+      this.lastName = "",
+      this.gender = "",
+      this.username = "",
+      this.password = "",
+      this.status = "",
+      this.email = "",
+      this.image = "",
+      this.description = "",
+      this.phoneNumber = "",
+      this.city = "",
+      this.targetedStudents = const [],
+      this.teachingWays = const [],
+      this.rateAvg = 0.0,
+      this.materials = const []});
 
   Teacher.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -47,8 +47,8 @@ class Teacher {
     description = json['description'];
     phoneNumber = json['phoneNumber'];
     city = json['city'];
-    targetedStudents = json['targetedStudents'].cast<String>();
-    teachingWays = json['teachingWays'].cast<String>();
+    targetedStudents = json['targetedStudents'];
+    teachingWays = json['teachingWays'];
     rateAvg = json['rateAvg'];
     if (json['materials'] != null) {
       materials = <Materials>[];

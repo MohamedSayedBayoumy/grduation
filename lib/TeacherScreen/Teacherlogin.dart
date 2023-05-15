@@ -146,29 +146,34 @@
 //     );
 //   }
 // }
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:graduationproject2/TeacherScreen/TeacherHome.dart';
 import 'package:graduationproject2/classes/Student.dart';
+import 'package:graduationproject2/services/api_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/Teacher.dart';
+import '../main.dart';
 import '../services/Api.dart';
 import '../services/loginuser.dart';
 
-class Login extends StatefulWidget {
+class LoginTeacher extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginTeacherState createState() => _LoginTeacherState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginTeacherState extends State<LoginTeacher> {
   final _formKey = GlobalKey<FormState>();
   late String _username;
   late String _password;
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  Teacher ?teacher;
+  Teacher? teacher;
   bool _isPasswordVisible = false;
   @override
   void dispose() {
@@ -176,12 +181,15 @@ class _LoginState extends State<Login> {
     _passwordController.dispose();
     super.dispose();
   }
+
   Future<Teacher?> submitData(String username, String password) async {
-    var response =
-    await http.post(Uri.parse('https://mobiinstructor-production.up.railway.app/mobi-instructor/api/v1/teachers/'), body: {
-      'username': _username,
-      'password': _password,
-    });
+    var response = await http.post(
+        Uri.parse(
+            'https://mobiinstructor-production.up.railway.app/mobi-instructor/api/v1/teachers/'),
+        body: {
+          'username': _username,
+          'password': _password,
+        });
     var data = response.body;
 
     if (response.statusCode == 201) {
@@ -209,7 +217,6 @@ class _LoginState extends State<Login> {
     return null;
   }
 
-
   static Future<Teacher?> login(String username, String password) async {
     final prefs = await SharedPreferences.getInstance();
     final storedUsername = prefs.getString('username');
@@ -233,13 +240,13 @@ class _LoginState extends State<Login> {
               backgroundColor: Colors.teal,
             ),
             body: Container(
-              // decoration: BoxDecoration(
-              //   image: DecorationImage(
-              //     image: AssetImage('assets/images/background.png'),
-              //     // Background image for the page
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
+                // decoration: BoxDecoration(
+                //   image: DecorationImage(
+                //     image: AssetImage('assets/images/background.png'),
+                //     // Background image for the page
+                //     fit: BoxFit.cover,
+                //   ),
+                // ),
                 child: Form(
                     key: _formKey,
                     child: Padding(
@@ -250,21 +257,24 @@ class _LoginState extends State<Login> {
                               children: [
                                 SizedBox(height: 20.0),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: Text('مرحبا في تطبيق ',
-                                      style: Theme.of(context).textTheme.headlineMedium),
-
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium),
                                 ),
                                 SizedBox(height: 50.0),
                                 // Add some spacing from the top
                                 TextFormField(
                                   controller: _usernameController,
-                                  decoration:  const InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'اسم المستخدم',
                                     border: OutlineInputBorder(),
 
                                     filled: true,
-                                    prefixIcon: Icon(Icons.person), // Add an icon for the username field
+                                    prefixIcon: Icon(Icons
+                                        .person), // Add an icon for the username field
                                   ),
                                   style: TextStyle(fontFamily: 'Montserrat'),
                                   // Use a custom font
@@ -282,7 +292,7 @@ class _LoginState extends State<Login> {
                                 TextFormField(
                                   controller: _passwordController,
                                   obscureText: !_isPasswordVisible,
-                                  decoration:  InputDecoration(
+                                  decoration: InputDecoration(
                                     labelText: 'كلمة السر',
                                     border: const OutlineInputBorder(),
                                     filled: true,
@@ -293,10 +303,11 @@ class _LoginState extends State<Login> {
                                           : Icons.visibility),
                                       onPressed: () {
                                         setState(() {
-                                          _isPasswordVisible = !_isPasswordVisible;
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible;
                                         });
                                       },
-                                    ),// Add an icon for the password field
+                                    ), // Add an icon for the password field
                                   ),
                                   style: TextStyle(fontFamily: 'Montserrat'),
                                   // Use a custom font
@@ -313,19 +324,33 @@ class _LoginState extends State<Login> {
                                 const SizedBox(height: 16.0),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, 'register');
+                                    Navigator.pushNamed(context, 'teacherreg');
                                   },
-                                  child: const Text('مستخدم جديد', style:TextStyle(color: Colors.teal) ,),
+                                  child: const Text(
+                                    'مستخدم جديد',
+                                    style: TextStyle(color: Colors.teal),
+                                  ),
                                 ),
 
                                 ElevatedButton(
-                                  onPressed: () async {
-                                    _username = _usernameController.text;
-                                    _password = _passwordController.text;
-                                    Teacher? Data = await submitData(
-                                        _username, _password);
-                                    setState(() {
-                                        teacher = Data;
+                                  onPressed: () {
+                                    TeacherServices.loginTeacher(
+                                            userName: _usernameController.text,
+                                            passWord: _passwordController.text)
+                                        .then((value) async {
+                                      if (value == null) {
+                                      } else {
+                                        await sharedPreferences.setBool(
+                                            'isLoginTeacher', true);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TeacherhomeScreen(
+                                                teacher: value,
+                                              ),
+                                            ));
+                                      }
                                     });
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -334,24 +359,20 @@ class _LoginState extends State<Login> {
                                   ),
                                   child: const Text(
                                     'تسجيل',
-                                    style: TextStyle(color: Colors
-                                        .white), // Use the app's primary text color
+                                    style: TextStyle(
+                                        color: Colors
+                                            .white), // Use the app's primary text color
                                   ),
                                 ),
                                 const SizedBox(height: 16.0),
                                 TextButton(
-                                    onPressed: () {
-                                    }, child: Text('نسيت كلمة السر', style: TextStyle(
-                                    fontSize: 15.0, color: Colors.teal
-                                ),)
-                                ),
-                              ]
-                          ),
-                        )
-                    )
-                )
-            )
-        )
-    );
+                                    onPressed: () {},
+                                    child: Text(
+                                      'نسيت كلمة السر',
+                                      style: TextStyle(
+                                          fontSize: 15.0, color: Colors.teal),
+                                    )),
+                              ]),
+                        ))))));
   }
 }

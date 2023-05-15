@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:graduationproject2/classes/Teacher.dart';
-import '../classes/Student.dart';
+// ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/material.dart';
+import 'package:graduationproject2/TeacherScreen/registrationTeacher2.dart';
+import 'package:graduationproject2/classes/Teacher.dart';
+import 'package:graduationproject2/services/api_helper.dart';
+import '../classes/Student.dart';
 
 class RegistrationTeacher extends StatefulWidget {
   @override
@@ -21,7 +24,9 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
-  final _phonenumberController= TextEditingController();
+  final _phonenumberController = TextEditingController();
+
+  Teacher? teacher;
 
   @override
   void dispose() {
@@ -29,6 +34,7 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
     _confirmpasswordController.dispose();
     super.dispose();
   }
+
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a password';
@@ -46,12 +52,13 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
     return null;
   }
 
-  String? _validateusername(String? value){
+  String? _validateusername(String? value) {
     if (value != null && value.isEmpty) {
       return 'Please enter a username';
     }
     return null;
   }
+
   bool _validateemail(String email) {
     if (email.isEmpty) {
       return false;
@@ -62,38 +69,40 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
     return true;
   }
 
-  String? _validatename(String? value){
+  String? _validatename(String? value) {
     if (value != null && value.isEmpty) {
       return 'Please enter your name';
     }
     return null;
   }
-  String? _validatephone(String? value){
+
+  String? _validatephone(String? value) {
     if (value != null && value.isEmpty) {
       return 'Please enter your phonenumber';
     }
-    if(value!.length < 10){
+    if (value!.length < 10) {
       return 'الرقم غير صحيح';
     }
     return null;
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    return Padding (
+    return Padding(
       padding: EdgeInsets.all(0),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('مستخدم جديد', style: TextStyle(fontSize:30,),),
+            title: Text(
+              'مستخدم جديد',
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ),
             backgroundColor: Colors.teal,
           ),
-          body:Form(
+          body: Form(
             key: _formKey,
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -108,11 +117,8 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
                       border: OutlineInputBorder(),
                     ),
                     validator: _validatename,
-                    onSaved: (value) {
-                      _name = value!;
-                    },
                   ),
-                  const  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -126,9 +132,6 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
                       }
                       return null;
                     },
-                    onSaved: (value) {
-                      _email = value!;
-                    },
                   ),
                   SizedBox(height: 16.0),
                   TextFormField(
@@ -137,120 +140,73 @@ class _RegistrationTeacherState extends State<RegistrationTeacher> {
                       labelText: 'اسم المستخدم',
                       border: OutlineInputBorder(),
                     ),
-
                     validator: _validateusername,
                     onSaved: (value) {
                       _username = value!;
                     },
-
-
-
                   ),
-                  SizedBox(height: 16.0,),
-
+                  SizedBox(
+                    height: 16.0,
+                  ),
                   TextFormField(
-                      controller: _phonenumberController,
-                      decoration: InputDecoration(
-                        labelText: 'رقم الهاتف',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: _validatephone,
-                      onSaved: (value) {
-                        _phonenumber = value!;
-                      }
-
+                    controller: _phonenumberController,
+                    decoration: InputDecoration(
+                      labelText: 'رقم الهاتف',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: _validatephone,
                   ),
                   SizedBox(height: 16.0),
                   TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'كلمالسر',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: _validatePassword,
-                      onSaved: (value) {
-                        _password = value!;
-                      }
-
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'كلمة السر',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: _validatePassword,
                   ),
-                  const SizedBox(height: 20.0,),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
                   TextFormField(
                     controller: _confirmpasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
                         labelText: 'تاكيد كلمة السر',
-                        border: OutlineInputBorder()
-                    ),
-
+                        border: OutlineInputBorder()),
                     validator: _validateConfirmPassword,
                   ),
-
                   const SizedBox(height: 20.0),
-                  Text('الجنس'),
-                  Row(
-                    children: <Widget>[
-                      Radio(
-                        value: 'male',
-                        groupValue: _gender,
-                        onChanged: (value) {
-                          setState(() {
-                            _gender = value! as String;
-                          });
-                        },
-                      ),
-                      Text('ذكر'),
-                      Radio(
-                        value: 'female',
-                        groupValue: _gender,
-                        onChanged: (value) {
-                          setState(() {
-                            _gender = value! as String;
-                          });
-                        },
-                      ),
-                      Text('انثى'),
-                    ],
-                  ),
                   SizedBox(height: 16.0),
                   ElevatedButton(
-
-
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .teal, // Use the app's primary color for the button
-                      ),
-
-                    child: const  Text('تابع',
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .teal, // Use the app's primary color for the button
+                    ),
+                    child: const Text(
+                      'تابع',
                       style: TextStyle(
                         fontSize: 20.0,
                       ),
                     ),
-                    onPressed: () async {
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Save the user's data
-                        _formKey.currentState!.save();
-                        // final user = Student(
-                        //   name: _name,
-                        //   email: _email,
-                        //   username: _username,
-                        //   password: _password,
-                        //   gender: _gender,
-                        // );
-                        final user = Teacher();
-
-
-                       // user.save();
-                        Navigator.pushNamed(context, 'teacherreg2');
-
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Registrationteacher2(
+                                  teacher: Teacher(
+                                      firstName: _nameController.text,
+                                      email: _emailController.text,
+                                      username: _usernameController.text,
+                                      phoneNumber: _phonenumberController.text,
+                                      password: _passwordController.text)),
+                            ));
                       }
                     },
                   ),
-
-
-
                 ],
-
               ),
             ),
           ),
